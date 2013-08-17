@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html class="no-js">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title></title>
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+        <script>
+        jQuery(function(){
+            jQuery('#get').click(function(){
+                var url = "http://"+jQuery('#host').val()+jQuery('#port').val()+"/"+jQuery('#bucket').val()+"/"+jQuery('#key').val();
+                jQuery.ajax(
+                    url,{
+                        type:"GET",
+                        dataType:"text",
+                        success:function(data){
+                            jQuery("#value").val(data);
+                        }
+                    }
+
+                );
+            });
+
+        });
+        </script>
+    </head>
+    <body>
+        <form>
+            host: <input type="text" name="host" id="host"/><br/>
+            port: <input type="text" name="port" id="port"/><br/>
+            bucket: <input type="text" name="bucket" id="bucket"/><br/>
+            key: <input type="text" name="key" id="key"/><br/>
+            mimeType: <input type="text" name="mimeType" id="mimType"/><br/>
+            value: <textarea name="value" id="value"></textarea><br/>
+            <button id="get">get</button>
+            <button id="put">put</button>
+            <button id="delete">delete</button>
+        </form>
+    </body>
+</html>
