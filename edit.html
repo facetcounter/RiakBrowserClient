@@ -1,40 +1,127 @@
 <!DOCTYPE html>
-<html class="no-js">
+<html>
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <title></title>
-        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+        <style>
+            .button {
+                background-color: skyblue;
+                border:black 1px solid;
+                padding:5px;
+                margin:5px;
+                width:70px;
+
+
+            }
+        </style>
         <script>
         jQuery(function(){
             jQuery('#get').click(function(){
-                var url = "http://"+jQuery('#host').val()+jQuery('#port').val()+"/"+jQuery('#bucket').val()+"/"+jQuery('#key').val();
-                jQuery.ajax(
-                    url,{
-                        type:"GET",
-                        dataType:"text",
-                        success:function(data){
-                            jQuery("#value").val(data);
-                        }
+                riakJs.getValue({
+                    host:jQuery('#host').val(),
+                    port:jQuery('#port').val(),
+                    bucket:jQuery('#bucket').val(),
+                    key:jQuery('#key').val(),
+                    callback:function(data){
+                        jQuery("#value").val(data);
                     }
-
-                );
+                }); 
+            });
+            jQuery('#put').click(function(){
+                riakJs.putValue({
+                    host:jQuery('#host').val(),
+                    port:jQuery('#port').val(),
+                    bucket:jQuery('#bucket').val(),
+                    mimeType:jQuery('#mimeType').val(),
+                    key:jQuery('#key').val(),
+                    data:jQuery('#value').val(),
+                    callback:function(data){
+                        jQuery("#value").val(data);
+                    }
+                }); 
+            });
+            jQuery('#install').click(function(){
+                riakJs.putValue({
+                    host:jQuery('#host').val(),
+                    port:jQuery('#port').val(),
+                    bucket:jQuery('#bucket').val(),
+                    key:jQuery('#key').val(),
+                    mimeType:"text/html",
+                    data:'<!DOCTYPE html>\n<html>'+jQuery('html').html()+"</html>",
+                    callback:function(data){
+                        jQuery("#value").val(data);
+                    }
+                }); 
             });
 
         });
+        var riakJs={
+            getValue: function(args){
+                 var getLocation = "http://"+args.host+":"+args.port+"/riak/"+args.bucket+"/"+args.key;
+                 jQuery.ajax(
+                    {
+                        url:getLocation,
+                        type:"GET",
+                        dataType:"text",
+                        success:args.callback
+                    }
+
+                );
+            },
+            putValue: function(args){
+                 var putLocation = "http://"+args.host+":"+args.port+"/riak/"+args.bucket+"/"+args.key;
+                 jQuery.ajax(
+                    {
+                        url:putLocation,
+                        type:"PUT",
+                        data:args.data,
+                        dataType:"text",
+                        mimeType:args.mimeType, //stupidly, this is not enough, so:
+                        headers:{'Content-Type':args.mimeType},
+                        processData:false,
+                        success:args.callback
+                    }
+
+                );
+            }
+        };
         </script>
     </head>
     <body>
         <form>
-            host: <input type="text" name="host" id="host"/><br/>
-            port: <input type="text" name="port" id="port"/><br/>
-            bucket: <input type="text" name="bucket" id="bucket"/><br/>
-            key: <input type="text" name="key" id="key"/><br/>
-            mimeType: <input type="text" name="mimeType" id="mimType"/><br/>
-            value: <textarea name="value" id="value"></textarea><br/>
-            <button id="get">get</button>
-            <button id="put">put</button>
-            <button id="delete">delete</button>
+            host:
+            <input type="text" name="host" id="host"/><br/>
+            port:
+            <input type="text" name="port" id="port"/><br/>
+            bucket:
+            <input type="text" name="bucket" id="bucket"/><br/>
+            key:
+            <input type="text" name="key" id="key"/><br/>
+            mimeType:
+            <select name="mimeType" id="mimeType"/>
+                <option value="text/plain">text/plain</option>
+                <option value="text/html">text/html</option>
+                <option value="text/css">text/css</option>
+                <option value="application/javascript">application/javascript</option>
+                <option value="application/json">application/json</option>
+                <option value="application/rss+xml">application/rss+xml</option>
+                <option value="application/xml">application/xml</option>
+            </select>
+
+            <div id="get" class="button">get</div>
+            <div id="put" class="button">put</div>
+            <div id="delete" class="button">delete</div>
+            <div id="install" class="button">install me</div>
+                curl -X PUT -H "Content-Type: text/html" --data-binary "@edit.html" "http://crawlbot:8098/riak/nathan/edit.html";
+
+
+            <br/>
+            value:
+            <br/>
+            <textarea name="value" id="value" rows="30"cols="80"></textarea><br/>
+            
         </form>
     </body>
 </html>
