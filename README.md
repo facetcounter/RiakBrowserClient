@@ -13,9 +13,11 @@ It uses javascript to query the database and provide a user interface to viewing
 
 cURL it into your instance, then visit the key you just populated.
 
+If you have the repo locally:
 curl -X PUT -H "Content-Type: text/html" --data-binary "@this_file.html" "http://crawlbot:8098/riak/yourBucket/nameWhatYouWant.html"
 
- * (todo: see if I can find a piped curl pair that will send a github URL directly into a riak bucket)
+If you want to pull from github:
+curl -X GET "https://raw.github.com/facetcounter/RiakBrowserClient/master/edit.html" | curl -X PUT -H "Content-Type: text/html" --data-binary @- "http://crawlbot:8098/riak/yourBucket/nameWhatYouWant.html";
 
 # feature set
 
